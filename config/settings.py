@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import os
+import json, os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -76,15 +76,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-db_dir = f'{BASE_DIR}/../db.sqlite3'
-print( f'db_dir, ``{db_dir}``' )
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': db_dir,
-    }
-}
+# db_dir = f'{BASE_DIR}/../db.sqlite3'
+# print( f'db_dir, ``{db_dir}``' )
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         # 'NAME': BASE_DIR / 'db.sqlite3',
+#         'NAME': db_dir,
+#     }
+# }
+
+db_json = json.loads( os.environ['EZB_DEP__DATABASES_JSON'] )
+DATABASES = db_json
 
 
 # Password validation
