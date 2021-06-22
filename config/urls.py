@@ -20,6 +20,12 @@ from easyborrow_depositor_app import views
 
 
 urlpatterns = [
+
+    ## primary app urls...
     path('admin/', admin.site.urls),
-    path( 'version', views.version, name='version' )
+
+    ## support urls...
+    path( 'version/', views.version, name='version' ),
+    path( 'error_check/', views.error_check, name='error_check_url' ),
+
 ]
