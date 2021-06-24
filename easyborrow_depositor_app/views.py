@@ -9,10 +9,37 @@ from easyborrow_depositor_app.lib import version_helper
 
 def confirm_request( request ):
     """ Validates and cleans incoming data; presents confirmation-button; triggers call to confirm_handler. """
+    ## save incoming request
+    """
+    datestamp, referrer, full url
+    """
+    ## clean params
+    """
+    - remove empty params
+    - remove small list of end-of-line encodings
+    - remove empty space
+    """
+    ## save patron_dct & item_dct with short_code
+    """
+    patron_dct:
+    - eppn
+    - name_first
+    - name_last
+    - patron_barcode
+    - patron_email
+    - patron_group ('Undergraduate Student', 'Graduate Student', etc)
+    item_dct:
+    - title
+    - isbn
+    - oclc accession_number
+    - volumes
+    - openurl
+    """
+    ## present confirmation-button
     return HttpResponse( 'confirm_request coming ' )
 
 def confirm_handler( request ):
-    """ Deposits data to db; triggers email to user; redirects to message. """
+    """ Deposits data to separate easyborrow db; triggers email to user; redirects to message. """
     return HttpResponse( 'confirm_handler coming ' )
 
 def message( request ):
