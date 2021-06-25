@@ -18,41 +18,48 @@ def confirm_request( request ):
     """ Validates and cleans incoming data; presents confirmation-button; triggers call to confirm_handler. """
     log.debug( '\n\nstarting views.confirm_request()' )
     log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
+
+    ## setup
+    for key in [ 'uu_id', 'error_message' ]:
+        request.session[key] = ''
+
     ## save incoming request
     conf_req_hlpr = ConfReqHlpr()
-    uu_id = conf_req_hlpr.save_incoming_data(
-        request.build_absolute_uri(),
-        request.META.get( 'HTTP_REFERER', '' ),
-        request.META.get( 'REMOTE_ADDR', '' )
-        )
+    ( uu_id, err ) = conf_req_hlpr.save_incoming_data(
+        request.build_absolute_uri(), request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') )
+    if err:
+        assert type(err) == str
+        request.session['error_message'] = err
+        redirect_url = reverse( 'message_url' )
+        log.debug( 'redirecting to message url' )
+        return HttpResponseRedirect( redirect_url )
     assert type(uu_id) == str
     request.session['uu_id'] = uu_id
 
-    ## clean params
-    # querystring = request.META['QUERYSTRING']
-    # bib_ourl_url = f'{settings.BIB_OURL_API}?{request.META["QUERY_STRING"]}'
-    # log.debug( f'bib_ourl_url, ``{bib_ourl_url}``' )
-    params = { 'ourl': request.META["QUERY_STRING"] }
-    r = requests.get( settings.BIB_OURL_API, params=params, timeout=10, verify=True )
-    log.debug( f'r-url, ``{r.url}``' )
-    bib_dct = json.loads( r.content.decode('utf-8', 'replace') )
-    data = { 'raw_bib_dct': bib_dct }
-    jsn = json.dumps( data, sort_keys=True, indent=2 )
-    conf_req_hlpr.req_data_obj.item_json = jsn
-    conf_req_hlpr.req_data_obj.save()
+    ## save params
+    err = conf_req_hlpr.save_item_info( request.META["QUERY_STRING"] )
+    if err:
+        assert type(err) == str
+        request.session['error_message'] = err
+        redirect_url = reverse( 'message_url' )
+        log.debug( 'redirecting to message url' )
+        return HttpResponseRedirect( redirect_url )
+
+    # params = { 'ourl': request.META["QUERY_STRING"] }
+    # r = requests.get( settings.BIB_OURL_API, params=params, timeout=10, verify=True )
+    # log.debug( f'r-url, ``{r.url}``' )
+    # bib_dct = json.loads( r.content.decode('utf-8', 'replace') )
+    # data = { 'raw_bib_dct': bib_dct }
+    # jsn = json.dumps( data, sort_keys=True, indent=2 )
+    # conf_req_hlpr.req_data_obj.item_json = jsn
+    # conf_req_hlpr.req_data_obj.save()
+
+    ## save patron info
 
 
 
 
 
-    """
-    - remove empty params
-    - remove small list of end-of-line encodings
-    - remove empty space
-    """
-
-
-    ## save patron_dct & item_dct with short_code
     """
     patron_dct:
     - eppn
@@ -71,13 +78,23 @@ def confirm_request( request ):
     ## present confirmation-button
     return HttpResponse( 'confirm_request coming ' )
 
+    """
+    todo if needed...
+    - remove empty params
+    - remove small list of end-of-line encodings
+    - remove empty space
+    """
+
+
 def confirm_handler( request ):
     """ Deposits data to separate easyborrow db; triggers email to user; redirects to message. """
     return HttpResponse( 'confirm_handler coming ' )
 
 def message( request ):
     """ Shows user confirmation message (or problem message). """
-    return HttpResponse( 'message coming ' )
+    log.debug( '\n\nstarting views.message()' )
+    message = request.session['error_message']
+    return HttpResponse( message )
 
 
 ## support urls...
