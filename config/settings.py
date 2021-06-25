@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import json, os
 from pathlib import Path
 
+
+# =================================================
+# project settings
+# =================================================
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # print( f'BASE_DIR, ``{BASE_DIR}``' )
@@ -178,3 +183,10 @@ LOGGING = {
         # },
     }
 }
+
+
+# =================================================
+# app settings
+# =================================================
+
+BIB_OURL_API = os.environ['EZB_DEP__BIB_OURL_API_ROOT']
