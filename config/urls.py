@@ -22,13 +22,13 @@ from easyborrow_depositor_app import views
 urlpatterns = [
 
     ## primary app urls...
-    path( 'confirm_request/', views.confirm_request, name='confirm_request' ),  # validates and cleans incoming data; presents confirmation-button; triggers call to confirm_handler
-    path( 'confirm_handler/', views.confirm_handler, name='confirm_handler' ),  # deposits data to db; triggers email to user; redirects to message
-    path( 'message/', views.message, name='message' ),                          # shows user confirmation-message (or problem message)
+    path( 'confirm_request/', views.confirm_request, name='confirm_request_url' ),  # validates and cleans incoming data; presents confirmation-button; triggers call to confirm_handler
+    path( 'confirm_handler/', views.confirm_handler, name='confirm_handler_url' ),  # deposits data to db; triggers email to user; redirects to message
+    path( 'message/', views.message, name='message_url' ),                          # shows user confirmation-message (or problem message)
     path( 'admin/', admin.site.urls ),
 
     ## support urls...
-    path( 'version/', views.version, name='version' ),
+    path( 'version/', views.version, name='version_url' ),
     path( 'error_check/', views.error_check, name='error_check_url' ),
 
 ]
