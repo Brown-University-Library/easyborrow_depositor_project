@@ -3,9 +3,10 @@ import datetime, json, logging, pprint
 import requests
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
-from easyborrow_depositor_app.lib import confirm_request_helper
+# from easyborrow_depositor_app.lib import confirm_request_helper
+from easyborrow_depositor_app.lib.confirm_request_helper import ConfReqHlpr
 from easyborrow_depositor_app.lib import version_helper
-# from easyborrow_depositor_app.models import RequestData
+from easyborrow_depositor_app.models import RequestData
 
 
 log = logging.getLogger(__name__)
@@ -18,7 +19,9 @@ def confirm_request( request ):
     log.debug( '\n\nstarting views.confirm_request()' )
     log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
     ## save incoming request
-    confirm_request_helper.save_incoming_data( request.build_absolute_uri() )
+    conf_req_hlpr = ConfReqHlpr()
+    uu_id = conf_req_hlpr.save_incoming_data( request.build_absolute_uri() ); assert type(uu_id) == str
+    request.session['uu_id'] = uu_id
 
 
     ## clean params
@@ -28,6 +31,7 @@ def confirm_request( request ):
     params = { 'ourl': request.META["QUERY_STRING"] }
     r = requests.get( settings.BIB_OURL_API, params=params, timeout=10, verify=True )
     log.debug( f'r-url, ``{r.url}``' )
+
 
     """
     - remove empty params
