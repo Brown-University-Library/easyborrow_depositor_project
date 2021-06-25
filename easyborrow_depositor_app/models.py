@@ -14,3 +14,8 @@ class RequestData( models.Model ):
 
     def __str__(self):
         return str( self.uu_id )
+
+    class Meta:
+        ordering = ['-created']
+        verbose_name = "request entry"
+        verbose_name_plural = "request entries"

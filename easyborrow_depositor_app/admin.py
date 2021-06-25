@@ -4,11 +4,13 @@ from django.contrib import admin
 
 class RequestDataAdmin(admin.ModelAdmin):
 
-    list_display = [ 'uu_id' ]
+    list_display = [ 'created', 'uu_id', 'ezb_url', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
+
+    date_hierarchy = 'created'
 
     save_on_top = True
 
-    ## class RequestDataAdmin()
+    ## end class RequestDataAdmin()
 
 
 # class RequestDataAdmin(admin.ModelAdmin):
