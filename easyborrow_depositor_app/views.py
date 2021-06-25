@@ -20,9 +20,6 @@ def confirm_request( request ):
     log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
     ## save incoming request
     conf_req_hlpr = ConfReqHlpr()
-    # uu_id = conf_req_hlpr.save_incoming_data(
-    #     request.build_absolute_uri()
-    #     )
     uu_id = conf_req_hlpr.save_incoming_data(
         request.build_absolute_uri(),
         request.META.get( 'HTTP_REFERER', '' ),
@@ -31,7 +28,6 @@ def confirm_request( request ):
     assert type(uu_id) == str
     request.session['uu_id'] = uu_id
 
-
     ## clean params
     # querystring = request.META['QUERYSTRING']
     # bib_ourl_url = f'{settings.BIB_OURL_API}?{request.META["QUERY_STRING"]}'
@@ -39,6 +35,13 @@ def confirm_request( request ):
     params = { 'ourl': request.META["QUERY_STRING"] }
     r = requests.get( settings.BIB_OURL_API, params=params, timeout=10, verify=True )
     log.debug( f'r-url, ``{r.url}``' )
+    bib_dct = json.loads( r.content.decode('utf-8', 'replace') )
+    data = { 'raw_bib_dct': bib_dct }
+    jsn = json.dumps( data, sort_keys=True, indent=2 )
+    conf_req_hlpr.req_data_obj.item_json = jsn
+    conf_req_hlpr.req_data_obj.save()
+
+
 
 
 
