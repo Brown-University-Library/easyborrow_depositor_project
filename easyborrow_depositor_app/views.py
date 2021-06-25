@@ -1,9 +1,11 @@
 import datetime, json, logging, pprint
 
-from django.conf import settings as project_settings
+import requests
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from easyborrow_depositor_app.lib import confirm_request_helper
 from easyborrow_depositor_app.lib import version_helper
-from easyborrow_depositor_app.models import RequestData
+# from easyborrow_depositor_app.models import RequestData
 
 
 log = logging.getLogger(__name__)
@@ -14,24 +16,26 @@ log = logging.getLogger(__name__)
 def confirm_request( request ):
     """ Validates and cleans incoming data; presents confirmation-button; triggers call to confirm_handler. """
     log.debug( '\n\nstarting views.confirm_request()' )
+    log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
     ## save incoming request
-    """
-    datestamp, referrer, full url
-    """
-    # log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
-    perceived_url = request.build_absolute_uri()
-    log.debug( f'perceived_url, ``{perceived_url}``' )
-    req_data = RequestData()
-    req_data.ezb_url = perceived_url
-    req_data.save()
+    confirm_request_helper.save_incoming_data( request.build_absolute_uri() )
 
 
     ## clean params
+    # querystring = request.META['QUERYSTRING']
+    # bib_ourl_url = f'{settings.BIB_OURL_API}?{request.META["QUERY_STRING"]}'
+    # log.debug( f'bib_ourl_url, ``{bib_ourl_url}``' )
+    params = { 'ourl': request.META["QUERY_STRING"] }
+    r = requests.get( settings.BIB_OURL_API, params=params, timeout=10, verify=True )
+    log.debug( f'r-url, ``{r.url}``' )
+
     """
     - remove empty params
     - remove small list of end-of-line encodings
     - remove empty space
     """
+
+
     ## save patron_dct & item_dct with short_code
     """
     patron_dct:
@@ -74,7 +78,7 @@ def version( request ):
 
 def error_check( request ):
     """ For checking that admins receive error-emails. """
-    if project_settings.DEBUG == True:
+    if settings.DEBUG == True:
         1/0
     else:
         return HttpResponseNotFound( '<div>404 / Not Found</div>' )
