@@ -1,18 +1,31 @@
-import datetime, json
+import datetime, json, logging, pprint
 
 from django.conf import settings as project_settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from easyborrow_depositor_app.lib import version_helper
+from easyborrow_depositor_app.models import RequestData
+
+
+log = logging.getLogger(__name__)
 
 
 ## primary app urls...
 
 def confirm_request( request ):
     """ Validates and cleans incoming data; presents confirmation-button; triggers call to confirm_handler. """
+    log.debug( '\n\nstarting views.confirm_request()' )
     ## save incoming request
     """
     datestamp, referrer, full url
     """
+    # log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
+    perceived_url = request.build_absolute_uri()
+    log.debug( f'perceived_url, ``{perceived_url}``' )
+    req_data = RequestData()
+    req_data.ezb_url = perceived_url
+    req_data.save()
+
+
     ## clean params
     """
     - remove empty params
