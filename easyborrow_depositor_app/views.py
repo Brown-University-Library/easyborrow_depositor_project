@@ -28,33 +28,24 @@ def confirm_request( request ):
     ( uu_id, err ) = conf_req_hlpr.save_incoming_data(
         request.build_absolute_uri(), request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') )
     if err:
-        assert type(err) == str
-        request.session['error_message'] = err
-        redirect_url = reverse( 'message_url' )
-        log.debug( 'redirecting to message url' )
-        return HttpResponseRedirect( redirect_url )
+        rsp = conf_req_hlpr.handle_error( request, err )
+        return rsp
     assert type(uu_id) == str
     request.session['uu_id'] = uu_id
 
     ## save params
     err = conf_req_hlpr.save_item_info( request.META["QUERY_STRING"] )
     if err:
-        assert type(err) == str
-        request.session['error_message'] = err
-        redirect_url = reverse( 'message_url' )
-        log.debug( 'redirecting to message url' )
-        return HttpResponseRedirect( redirect_url )
-
-    # params = { 'ourl': request.META["QUERY_STRING"] }
-    # r = requests.get( settings.BIB_OURL_API, params=params, timeout=10, verify=True )
-    # log.debug( f'r-url, ``{r.url}``' )
-    # bib_dct = json.loads( r.content.decode('utf-8', 'replace') )
-    # data = { 'raw_bib_dct': bib_dct }
-    # jsn = json.dumps( data, sort_keys=True, indent=2 )
-    # conf_req_hlpr.req_data_obj.item_json = jsn
-    # conf_req_hlpr.req_data_obj.save()
+        rsp = conf_req_hlpr.handle_error( request, err )
+        return rsp
 
     ## save patron info
+    err = conf_req_hlpr.save_patron_info( request.META )
+    if err:
+        rsp = conf_req_hlpr.handle_error( request, err )
+        return rsp
+
+
 
 
 
