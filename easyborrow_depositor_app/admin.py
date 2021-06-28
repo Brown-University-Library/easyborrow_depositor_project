@@ -8,8 +8,8 @@ log = logging.getLogger(__name__)
 
 class RequestDataAdmin(admin.ModelAdmin):
 
-    # list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
-    list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json_100', 'patron_json_100', 'ezb_db_id' ]
+    # list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_json', 'item_json', 'patron_json', 'ezb_db_id' ]
+    list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_json', 'item_json_100', 'patron_json_100', 'ezb_db_id' ]
 
     def perceived_url_100( self, obj ):
         url = obj.perceived_url
@@ -54,7 +54,7 @@ class RequestDataAdmin(admin.ModelAdmin):
 
     readonly_fields = ( 'created', 'uu_id', 'ezb_db_id' )
 
-    search_fields = [ 'created', 'uu_id', 'perceived_url', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
+    search_fields = [ 'created', 'uu_id', 'perceived_url', 'referrer_json', 'item_json', 'patron_json', 'ezb_db_id' ]
 
     date_hierarchy = 'created'
 

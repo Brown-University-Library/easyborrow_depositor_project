@@ -32,7 +32,7 @@ class ConfReqHlpr():
                 'remote_addr': remote_addr
                 }
             jsn = json.dumps( data, sort_keys=True, indent=2 )
-            self.req_data_obj.referrer_url = jsn
+            self.req_data_obj.referrer_json = jsn
             self.req_data_obj.save()
             uu_id = str( self.req_data_obj.uu_id )
             log.debug( f'new uu_id, ``{uu_id}``' )
@@ -96,7 +96,7 @@ class ConfReqHlpr():
         try:
             patron_dct = json.loads( self.req_data_obj.patron_json )
             item_dct = json.loads( self.req_data_obj.item_json )['raw_bib_dct']['response']['bib']
-            perceived_ip = json.loads( self.req_data_obj.referrer_url )['remote_addr']
+            perceived_ip = json.loads( self.req_data_obj.referrer_json )['remote_addr']
             feedback_url = common.build_feedback_url( self.req_data_obj.perceived_url, perceived_ip, patron_dct['shib_email'] )
             context = {
                 'time_start': str( start_time_obj ),
