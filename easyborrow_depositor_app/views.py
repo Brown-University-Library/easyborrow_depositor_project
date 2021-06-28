@@ -21,6 +21,7 @@ def confirm_request( request ):
     log.debug( '\n\nstarting views.confirm_request()' )
     log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
     ## setup --------------------------------------
+    start = datetime.datetime.now()
     for key in [ 'uu_id', 'error_message' ]:
         request.session[key] = ''
     ## save incoming request ----------------------
@@ -43,12 +44,13 @@ def confirm_request( request ):
         rsp = conf_req_hlpr.handle_error( request, err )
         return rsp
     ## prep context -------------------------------
-    ( context, err ) = conf_req_hlpr.prepare_context()
+    ( context, err ) = conf_req_hlpr.prepare_context( start )
     if err:
         rsp = conf_req_hlpr.handle_error( request, err )
         return rsp
-    ## present confirmation-button
-    return HttpResponse( 'confirm_request coming ' )
+    ## prep response ------------------------------
+    resp = conf_req_hlpr.prepare_response( request, context )
+    return resp
 
 def confirm_handler( request ):
     """ Deposits data to separate easyborrow db; triggers email to user; redirects to message. """

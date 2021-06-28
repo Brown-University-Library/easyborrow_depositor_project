@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from easyborrow_depositor_app.lib import common
 from easyborrow_depositor_app.models import RequestData
+from django.shortcuts import render
 
 
 log = logging.getLogger(__name__)
@@ -87,14 +88,17 @@ class ConfReqHlpr():
             log.exception( err )
         return err
 
-    def prepare_context( self ):
+    def prepare_context( self, start_time_obj ):
         """ Preps page's data_dct.
             Called by views.confirm_request() """
+        assert type(start_time_obj) == datetime.datetime
         ( context, err ) = ( None, None )
         try:
             patron_dct = json.loads( self.req_data_obj.patron_json )
             item_dct = json.loads( self.req_data_obj.item_json )['raw_bib_dct']['response']['bib']
             context = {
+                'time_start': str( start_time_obj ),
+                'time_elapsed': str( datetime.datetime.now() - start_time_obj ),
                 'pattern_header': common.grab_pattern_header(),
                 'welcome_name': patron_dct['shib_name_first'],
                 'item_title': item_dct['title'],
@@ -105,6 +109,17 @@ class ConfReqHlpr():
             err = 'Problem preparing "confirm-request" screen.'
             log.exception( err )
         return ( context, err )
+
+    def prepare_response( self, request, context ):
+        """ Preps response.
+            Called by views.confirm_request() """
+        if request.GET.get('format', '') == 'json':
+            context_json = json.dumps(context, sort_keys=True, indent=2)
+            resp = HttpResponse( context_json, content_type='application/javascript; charset=utf-8' )
+        else:
+            resp = render( request, 'easyborrow_depositor_app_templates/confirm.html', context )
+        return resp
+
 
 
     def handle_error( self, request, err ):
