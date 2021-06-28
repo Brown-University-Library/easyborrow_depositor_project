@@ -40,7 +40,7 @@ def confirm_request( request ):
         return rsp
 
     ## save patron info
-    err = conf_req_hlpr.save_patron_info( request.META )
+    err = conf_req_hlpr.save_patron_info( request.META, request.get_host() )
     if err:
         rsp = conf_req_hlpr.handle_error( request, err )
         return rsp

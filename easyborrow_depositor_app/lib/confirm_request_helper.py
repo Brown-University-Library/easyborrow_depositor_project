@@ -24,7 +24,7 @@ class ConfReqHlpr():
         try:
             log.debug( f'perceived_url, ``{perceived_url}``; referrer, ``{referrer}``; remote_addr, ``{remote_addr}``' )
             self.req_data_obj = RequestData()
-            self.req_data_obj.ezb_url = perceived_url
+            self.req_data_obj.perceived_url = perceived_url
             data = {
                 'referrer': referrer,
                 'remote_addr': remote_addr
@@ -58,21 +58,22 @@ class ConfReqHlpr():
             log.exception( err )
         return err
 
-    def save_patron_info( self, meta_dct ):
+    def save_patron_info( self, meta_dct, host ):
         """ Saves required shib-info.
             Called by views.confirm_request() """
-        assert type(meta_dct) == dict
+        assert type(meta_dct) == dict; assert type(host) == str
         shibber = Shibber()
         cleaned_meta_dct = shibber.prep_shib_dct( meta_dct, host )
+        log.debug( f'cleaned_meta_dct, ``{cleaned_meta_dct}``' )
         temp_is_member_of_str = cleaned_meta_dct.get( 'isMemberOf', '' )
         patron_dct = {
-            shib_eppn: cleaned_meta_dct.get( 'Shibboleth-eppn', '' ),
-            shib_name_first: cleaned_meta_dct.get( 'Shibboleth-givenName', '' ),
-            shib_name_last: cleaned_meta_dct.get( 'Shibboleth-sn', '' ),
-            shib_patron_barcode: cleaned_meta_dct.get( 'Shibboleth-brownBarCode', '' ),
-            shib_email: cleaned_meta_dct.get( 'Shibboleth-mail', '' ),
-            shib_group: cleaned_meta_dct.get( 'Shibboleth-brownType', '' ),
-            shib_is_member_of_list: temp_is_member_of_str.split( ';' )
+            'shib_eppn': cleaned_meta_dct.get( 'Shibboleth-eppn', '' ),
+            'shib_name_first': cleaned_meta_dct.get( 'Shibboleth-givenName', '' ),
+            'shib_name_last': cleaned_meta_dct.get( 'Shibboleth-sn', '' ),
+            'shib_patron_barcode': cleaned_meta_dct.get( 'Shibboleth-brownBarCode', '' ),
+            'shib_email': cleaned_meta_dct.get( 'Shibboleth-mail', '' ),
+            'shib_group': cleaned_meta_dct.get( 'Shibboleth-brownType', '' ),
+            'shib_is_member_of_list': temp_is_member_of_str.split( ';' )
             }
         # eppn = cleaned_meta_dct.get( 'Shibboleth-eppn', '' )
         # name_first = cleaned_meta_dct.get( 'Shibboleth-givenName', '' )
@@ -114,7 +115,7 @@ class Shibber():
             Called by ConfReqHlpr.save_patron_info() """
         log.debug( 'starting prep_shib_dct()' )
         if host == '127.0.0.1' or host == '127.0.0.1:8000' or host == 'testserver':
-            cleaned_meta_dct = settings_app.DEV_META_DCT
+            cleaned_meta_dct = settings.DEV_SHIB_DCT
         else:
             cleaned_meta_dct = copy.copy( request_meta_dct )
             for (key, val) in request_meta_dct.items():  # get rid of some dictionary items not serializable
