@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 class RequestDataAdmin(admin.ModelAdmin):
 
     # list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
-    list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json_100', 'patron_json', 'ezb_db_id' ]
+    list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json_100', 'patron_json_100', 'ezb_db_id' ]
 
     def perceived_url_100( self, obj ):
         url = obj.perceived_url
@@ -21,11 +21,36 @@ class RequestDataAdmin(admin.ModelAdmin):
     def item_json_100( self, obj ):
         item_str = obj.item_json
         log.debug( f'item_str after initialization, ``{item_str}``' )
-        if len(obj.item_json) > 100:
-            item_str = f'{obj.item_json[:97]}...'
-            log.debug( f'item_str after length, exceeded, ``{item_str}``' )
+        if item_str:
+            assert type(item_str) == str
+            if len(obj.item_json) > 100:
+                item_str = f'{obj.item_json[:97]}...'
+                log.debug( f'item_str after length, exceeded, ``{item_str}``' )
         return item_str
     item_json_100.short_description = 'item json (100)'
+
+    def patron_json_100( self, obj ):
+        patron_str = obj.patron_json
+        log.debug( f'patron_str after initialization, ``{patron_str}``' )
+        if patron_str:
+            assert type(patron_str) == str
+            if len(obj.patron_json) > 100:
+                patron_str = f'{obj.patron_json[:97]}...'
+                log.debug( f'patron_str after length, exceeded, ``{patron_str}``' )
+        return patron_str
+    patron_json_100.short_description = 'patron json (100)'
+
+    # def patron_json_100( self, obj ):
+    #     patron_str = obj.patron_json
+    #     if patron_str == None:
+    #         patron_str = ''
+    #     assert type(patron_str) == str
+    #     log.debug( f'patron_str after initialization, ``{patron_str}``' )
+    #     if len(obj.patron_json) > 100:
+    #         patron_str = f'{obj.patron_json[:97]}...'
+    #         log.debug( f'patron_str after length, exceeded, ``{patron_str}``' )
+    #     return patron_str
+    # patron_json_100.short_description = 'patron json (100)'
 
     readonly_fields = ( 'created', 'uu_id', 'ezb_db_id' )
 
