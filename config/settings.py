@@ -34,7 +34,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -78,6 +77,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.environ['EZB_DEP__CACHE_DIR_PATH'],
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -194,5 +199,10 @@ BIB_OURL_API = os.environ['EZB_DEP__BIB_OURL_API_ROOT']
 
 DEV_SHIB_DCT = json.loads( os.environ['EZB_DEP__DEV_SHIB_DCT_JSON'] )
 
-PATTERN_LIB_CACHE_TIMEOUT = int( os.environ['EZB_DEP__PATTERN_HEADER_CACHE_TIMEOUT_IN_HOURS'] ) * 60 * 60
-PATTERN_HEADER_URL = os.environ['EZB_DEP__PATTERN_HEADER_URL']
+# CACHE NOTE
+# - Note that the `CACHES` setting, earlier in this file, contains the cache-location setting -- applicable to this and any other caching.
+# - Cache is handled in seconds, so `PATTERN_LIB_CACHE_TIMEOUT` setting converts the envar hour-integer to seconds
+# - Also, `LIB` instead of `HEADER` used for following setting because the header url _is_ to a header file specifically...
+#   ...but it's likely that there will be at least another pattern-url; i.e. 'footer'.
+PATTERNLIB_HEADER_CACHE_TIMEOUT = int( os.environ['EZB_DEP__PATTERNLIB_HEADER_CACHE_TIMEOUT_IN_HOURS'] ) * 60 * 60
+PATTERNLIB_HEADER_URL = os.environ['EZB_DEP__PATTERNLIB_HEADER_URL']
