@@ -1,17 +1,31 @@
+import logging
 from easyborrow_depositor_app.models import RequestData
 from django.contrib import admin
 
 
+log = logging.getLogger(__name__)
+
+
 class RequestDataAdmin(admin.ModelAdmin):
 
-    list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
+    # list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
+    list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json_100', 'patron_json', 'ezb_db_id' ]
 
-    def perceived_url_100(self, obj):
+    def perceived_url_100( self, obj ):
         url = obj.perceived_url
         if len(obj.perceived_url) > 100:
             url = f'{obj.perceived_url[:97]}...'
         return url
-    perceived_url_100.short_description = "perceived url (100)"
+    perceived_url_100.short_description = 'perceived url (100)'
+
+    def item_json_100( self, obj ):
+        item_str = obj.item_json
+        log.debug( f'item_str after initialization, ``{item_str}``' )
+        if len(obj.item_json) > 100:
+            item_str = f'{obj.item_json[:97]}...'
+            log.debug( f'item_str after length, exceeded, ``{item_str}``' )
+        return item_str
+    item_json_100.short_description = 'item json (100)'
 
     readonly_fields = ( 'created', 'uu_id', 'ezb_db_id' )
 
