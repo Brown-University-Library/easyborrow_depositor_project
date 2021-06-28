@@ -4,18 +4,18 @@ from django.contrib import admin
 
 class RequestDataAdmin(admin.ModelAdmin):
 
-    list_display = [ 'created', 'uu_id', 'ezb_url_100', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
+    list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
 
-    def ezb_url_100(self, obj):
-        url = obj.ezb_url
-        if len(obj.ezb_url) > 100:
-            url = f'{obj.ezb_url[:97]}...'
+    def perceived_url_100(self, obj):
+        url = obj.perceived_url
+        if len(obj.perceived_url) > 100:
+            url = f'{obj.perceived_url[:97]}...'
         return url
-    ezb_url_100.short_description = "ezb url (100)"
+    perceived_url_100.short_description = "perceived url (100)"
 
     readonly_fields = ( 'created', 'uu_id', 'ezb_db_id' )
 
-    search_fields = [ 'created', 'uu_id', 'ezb_url', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
+    search_fields = [ 'created', 'uu_id', 'perceived_url', 'referrer_url', 'item_json', 'patron_json', 'ezb_db_id' ]
 
     date_hierarchy = 'created'
 
