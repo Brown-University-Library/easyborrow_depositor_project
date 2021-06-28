@@ -206,3 +206,6 @@ DEV_SHIB_DCT = json.loads( os.environ['EZB_DEP__DEV_SHIB_DCT_JSON'] )
 #   ...but it's likely that there will be at least another pattern-url; i.e. 'footer'.
 PATTERNLIB_HEADER_CACHE_TIMEOUT = int( os.environ['EZB_DEP__PATTERNLIB_HEADER_CACHE_TIMEOUT_IN_HOURS'] ) * 60 * 60
 PATTERNLIB_HEADER_URL = os.environ['EZB_DEP__PATTERNLIB_HEADER_URL']
+
+FEEDBACK_FORM_URL = os.environ['EZB_DEP__FEEDBACK_FORM_URL_ROOT']
+FEEDBACK_FORM_KEY = os.environ['EZB_DEP__FEEDBACK_FORM_KEY']

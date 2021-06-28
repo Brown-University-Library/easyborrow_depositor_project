@@ -96,10 +96,12 @@ class ConfReqHlpr():
         try:
             patron_dct = json.loads( self.req_data_obj.patron_json )
             item_dct = json.loads( self.req_data_obj.item_json )['raw_bib_dct']['response']['bib']
+            perceived_ip = json.loads( self.req_data_obj.referrer_url )['remote_addr']
+            feedback_url = common.build_feedback_url( self.req_data_obj.perceived_url, perceived_ip, patron_dct['shib_email'] )
             context = {
                 'time_start': str( start_time_obj ),
                 'time_elapsed': str( datetime.datetime.now() - start_time_obj ),
-                'pattern_header': common.grab_pattern_header(),
+                'pattern_header': common.grab_pattern_header( feedback_url ),
                 'welcome_name': patron_dct['shib_name_first'],
                 'item_title': item_dct['title'],
                 'action_url': reverse( 'confirm_handler_url' ),
