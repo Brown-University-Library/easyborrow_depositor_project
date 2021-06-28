@@ -3,7 +3,7 @@ import datetime, json, logging, pprint
 import requests
 
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from easyborrow_depositor_app.lib import common
 from easyborrow_depositor_app.models import RequestData
@@ -121,8 +121,6 @@ class ConfReqHlpr():
         else:
             resp = render( request, 'easyborrow_depositor_app_templates/confirm.html', context )
         return resp
-
-
 
     def handle_error( self, request, err ):
         """ Called by multiple view functions if ConfReqHlpr() returns an error. """

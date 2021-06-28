@@ -103,56 +103,29 @@ easyrequest-hay confirm
 
 {% block content %}
 
-<h1>easyrequest-hay &mdash; confirm &amp; login</h1>
+<h1>easyBorrow &mdash; confirm request</h1>
 
 <div id="info_text">
 
-    <p>You&rsquo;re requesting retrieval, from off-site storage, of the item:</p>
+    <p>You&rsquo;re requesting, from one of our borrowing partners, the item:</p>
     <!-- no label; consider table; it's tabular! -->
     <div id="item">
         <p class="item_label">Title:</p>
         <p class="item_value">{{ item_title }}</p>
-        {% if item_callnumber %}
-        <p class="item_label">Call Number:</p>
-        <p class="item_value">{{ item_callnumber }}</p>
-        {% endif %}
     </div>
 
-    <div id="reminder">
-        <h2>Note...</h2>
-        <p class="reminder_text">Remote access to Special Collections materials is only available to Brown community members at this time.</p>
-        <p class="reminder_text">Please click on the Brown Login to initiate your request. A Library staff member will contact you to confirm the details of your request.</p
-    </div>
-
-<!--
-    <div id="reminder">
-        <h2>Reminder...</h2>
-        <h2 id="longline">This item may only be used within the Special Collections Reading Room of the John Hay Library.</h2>
-    </div>
- -->
-
-<!--
-    <div id="reminder">
-        <h2>Reminder...</h2>
-        <h2 id="longline">This special-collections item may _only_ be used within the Special Collections Reading Room of the John Hay Library.</h2>
-    </div>
--->
-
-    <form action="{{ action_url }}" method="GET">
+    <form action="{{ action_url }}" method="POST">
         <input type="hidden" name="shortlink" value="{{ shortlink }}">
         <div id="shib">
-            <input id="shib" type="submit" value="Brown Login" name="type">
+            <input id="shib" type="submit" value="Yes, get this!" name="type">
         </div>
 
-<!--
-        <div id="nonshib">
-            <input id="nonshib" type="submit" value="Non-Brown Login" name="type">
-        </div>
- -->
-
+        <!--
         <div id="cancel">
             <input type="submit" value="Cancel; return to Josiah" name="type">
         </div>
+        -->
+
     </form>
 
     <div id="clear"></div>
