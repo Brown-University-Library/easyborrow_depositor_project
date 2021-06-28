@@ -30,5 +30,6 @@ urlpatterns = [
     ## support urls...
     path( 'version/', views.version, name='version_url' ),
     path( 'error_check/', views.error_check, name='error_check_url' ),
+    path( 'info/', views.info, name='info_url' ),
 
 ]

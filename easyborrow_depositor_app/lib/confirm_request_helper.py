@@ -1,10 +1,11 @@
-import datetime, json, logging
+import datetime, json, logging, pprint
 
 import requests
 
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from easyborrow_depositor_app.lib import common
 from easyborrow_depositor_app.models import RequestData
 
 
@@ -86,42 +87,28 @@ class ConfReqHlpr():
             log.exception( err )
         return err
 
-    # def save_patron_info( self, meta_dct, host ):
-    #     """ Saves required shib-info.
-    #         Called by views.confirm_request() """
-    #     assert type(meta_dct) == dict
-    #     assert type(host) == str
-    #     shibber = Shibber()
-    #     cleaned_meta_dct = shibber.prep_shib_dct( meta_dct, host )
-    #     log.debug( f'cleaned_meta_dct, ``{cleaned_meta_dct}``' )
-    #     temp_is_member_of_str = cleaned_meta_dct.get( 'isMemberOf', '' )
-    #     patron_dct = {
-    #         'shib_eppn': cleaned_meta_dct.get( 'Shibboleth-eppn', '' ),
-    #         'shib_name_first': cleaned_meta_dct.get( 'Shibboleth-givenName', '' ),
-    #         'shib_name_last': cleaned_meta_dct.get( 'Shibboleth-sn', '' ),
-    #         'shib_patron_barcode': cleaned_meta_dct.get( 'Shibboleth-brownBarCode', '' ),
-    #         'shib_email': cleaned_meta_dct.get( 'Shibboleth-mail', '' ),
-    #         'shib_group': cleaned_meta_dct.get( 'Shibboleth-brownType', '' ),
-    #         'shib_is_member_of_list': temp_is_member_of_str.split( ';' )
-    #         }
-    #     jsn = json.dumps( patron_dct, sort_keys=True, indent=2 )
-    #     self.req_data_obj.patron_json = jsn
-    #     self.req_data_obj.save()
-    #     return
-
-
-    # def ensure_basics()
-        # ensure_basics = shibber.ensure_basics( cleaned_meta_dct )
-
-    #     - eppn
-    # - name_first
-    # - name_last
-    # - patron_barcode
-    # - patron_email
-    # - patron_group ('Undergraduate Student', 'Graduate Student', etc)
+    def prepare_context( self ):
+        """ Preps page's data_dct.
+            Called by views.confirm_request() """
+        ( context, err ) = ( None, None )
+        try:
+            patron_dct = json.loads( self.req_data_obj.patron_json )
+            item_dct = json.loads( self.req_data_obj.item_json )['raw_bib_dct']['response']['bib']
+            context = {
+                'pattern_header': common.grab_pattern_header(),
+                'welcome_name': patron_dct['shib_name_first'],
+                'item_title': item_dct['title'],
+                'action_url': reverse( 'confirm_handler_url' ),
+            }
+            log.debug( 'context, ```%s```' % pprint.pformat(context) )
+        except:
+            err = 'Problem preparing "confirm-request" screen.'
+            log.exception( err )
+        return ( context, err )
 
 
     def handle_error( self, request, err ):
+        """ Called by multiple view functions if ConfReqHlpr() returns an error. """
         assert type(err) == str
         request.session['error_message'] = err
         redirect_url = reverse( 'message_url' )

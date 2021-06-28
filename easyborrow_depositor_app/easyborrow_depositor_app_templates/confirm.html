@@ -1,0 +1,162 @@
+{% extends "easyrequest_hay_app_templates/base.html" %}
+
+
+{% block page_title %}
+easyrequest-hay confirm
+{% endblock page_title %}
+
+
+{% block extra_css %}
+<style type="text/css">
+    form {
+        /*margin-top: 1.25em;*/
+        margin-top: 2em;
+    }
+
+    #info_text p {
+        font-size: .8em;
+        margin: 0;
+    }
+
+    input#shib {
+        margin-right: 2em;
+    }
+    input#nonshib {
+        margin-right: 2em;
+    }
+    /* item info... */
+    div#item {
+      margin-top: .5em;
+      padding: 0;
+      /*padding-bottom: 1.25em;*/
+    }
+    div#item p.item_label {
+      margin: 0;
+      padding: 0;
+      display: block;
+      font-size: 100%;
+      line-height: 1.5em;
+      padding-right: .75em;
+      width: 10em;
+      text-align: right;
+      float: left;
+      font-weight: bold;
+    }
+    div#item p.item_value {
+      margin: 0;
+      padding: 0;
+      display: block;
+      font-size: 100%;
+      line-height: 1.5em;
+      font-weight: bold;
+    }
+    /* END -- item info... */
+    div#reminder {
+        margin-top: 1em;
+        padding-right: 8em;
+    }
+
+    div#reminder p.reminder_text {
+        color: maroon;
+        font-size: 100%;
+        line-height: 125%;
+    }
+
+/*
+    div#reminder h2#longline {
+        line-height: 150%;
+    }
+*/
+
+    h2 {
+        font-family: 'Source Sans Pro', sans-serif;
+        color: maroon;
+        font-size: 1.25em;
+        font-weight: 400;
+    }
+    div#shib {
+        float: left;
+    }
+    div#shib input {
+        width: 15em;
+    }
+    div#nonshib {
+        float: left;
+    }
+    div#nonshib input {
+        width: 15em;
+    }
+    div#cancel {
+        float: left;
+    }
+    div#cancel input {
+        width: 15em;
+    }
+    div#clear {
+        margin: 0;
+        padding: 0;
+        clear: both;
+    }
+</style>
+{% endblock extra_css %}
+
+
+{% block content %}
+
+<h1>easyrequest-hay &mdash; confirm &amp; login</h1>
+
+<div id="info_text">
+
+    <p>You&rsquo;re requesting retrieval, from off-site storage, of the item:</p>
+    <!-- no label; consider table; it's tabular! -->
+    <div id="item">
+        <p class="item_label">Title:</p>
+        <p class="item_value">{{ item_title }}</p>
+        {% if item_callnumber %}
+        <p class="item_label">Call Number:</p>
+        <p class="item_value">{{ item_callnumber }}</p>
+        {% endif %}
+    </div>
+
+    <div id="reminder">
+        <h2>Note...</h2>
+        <p class="reminder_text">Remote access to Special Collections materials is only available to Brown community members at this time.</p>
+        <p class="reminder_text">Please click on the Brown Login to initiate your request. A Library staff member will contact you to confirm the details of your request.</p
+    </div>
+
+<!--
+    <div id="reminder">
+        <h2>Reminder...</h2>
+        <h2 id="longline">This item may only be used within the Special Collections Reading Room of the John Hay Library.</h2>
+    </div>
+ -->
+
+<!--
+    <div id="reminder">
+        <h2>Reminder...</h2>
+        <h2 id="longline">This special-collections item may _only_ be used within the Special Collections Reading Room of the John Hay Library.</h2>
+    </div>
+-->
+
+    <form action="{{ action_url }}" method="GET">
+        <input type="hidden" name="shortlink" value="{{ shortlink }}">
+        <div id="shib">
+            <input id="shib" type="submit" value="Brown Login" name="type">
+        </div>
+
+<!--
+        <div id="nonshib">
+            <input id="nonshib" type="submit" value="Non-Brown Login" name="type">
+        </div>
+ -->
+
+        <div id="cancel">
+            <input type="submit" value="Cancel; return to Josiah" name="type">
+        </div>
+    </form>
+
+    <div id="clear"></div>
+
+</div>  <!-- end <div id="info_text"> -->
+
+{% endblock content %}

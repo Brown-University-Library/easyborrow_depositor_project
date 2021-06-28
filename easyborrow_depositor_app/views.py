@@ -42,6 +42,11 @@ def confirm_request( request ):
     if err:
         rsp = conf_req_hlpr.handle_error( request, err )
         return rsp
+    ## prep context -------------------------------
+    ( context, err ) = conf_req_hlpr.prepare_context()
+    if err:
+        rsp = conf_req_hlpr.handle_error( request, err )
+        return rsp
     ## present confirmation-button
     return HttpResponse( 'confirm_request coming ' )
 
@@ -76,3 +81,7 @@ def error_check( request ):
         1/0
     else:
         return HttpResponseNotFound( '<div>404 / Not Found</div>' )
+
+def info( request ):
+    """ Presents basic web-app info. """
+    return HttpResponse( 'info response coming' )
