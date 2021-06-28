@@ -12,18 +12,18 @@ from easyborrow_depositor_app.models import RequestData
 log = logging.getLogger(__name__)
 
 
-## primary app urls...
+# =================================================
+# primary app urls...
+# =================================================
 
 def confirm_request( request ):
     """ Validates and cleans incoming data; presents confirmation-button; triggers call to confirm_handler. """
     log.debug( '\n\nstarting views.confirm_request()' )
     log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
-
-    ## setup
+    ## setup --------------------------------------
     for key in [ 'uu_id', 'error_message' ]:
         request.session[key] = ''
-
-    ## save incoming request
+    ## save incoming request ----------------------
     conf_req_hlpr = ConfReqHlpr()
     ( uu_id, err ) = conf_req_hlpr.save_incoming_data(
         request.build_absolute_uri(), request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') )
@@ -32,50 +32,18 @@ def confirm_request( request ):
         return rsp
     assert type(uu_id) == str
     request.session['uu_id'] = uu_id
-
-    ## save params
+    ## save item info -----------------------------
     err = conf_req_hlpr.save_item_info( request.META["QUERY_STRING"] )
     if err:
         rsp = conf_req_hlpr.handle_error( request, err )
         return rsp
-
-    ## save patron info
+    ## save patron info ---------------------------
     err = conf_req_hlpr.save_patron_info( request.META, request.get_host() )
     if err:
         rsp = conf_req_hlpr.handle_error( request, err )
         return rsp
-
-
-
-
-
-
-
-    """
-    patron_dct:
-    - eppn
-    - name_first
-    - name_last
-    - patron_barcode
-    - patron_email
-    - patron_group ('Undergraduate Student', 'Graduate Student', etc)
-    item_dct:
-    - title
-    - isbn
-    - oclc accession_number
-    - volumes
-    - openurl
-    """
     ## present confirmation-button
     return HttpResponse( 'confirm_request coming ' )
-
-    """
-    todo if needed...
-    - remove empty params
-    - remove small list of end-of-line encodings
-    - remove empty space
-    """
-
 
 def confirm_handler( request ):
     """ Deposits data to separate easyborrow db; triggers email to user; redirects to message. """
@@ -88,7 +56,9 @@ def message( request ):
     return HttpResponse( message )
 
 
-## support urls...
+# =================================================
+# support urls...
+# =================================================
 
 def version( request ):
     """ Returns basic branch and commit data. """

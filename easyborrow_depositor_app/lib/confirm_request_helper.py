@@ -63,23 +63,51 @@ class ConfReqHlpr():
             Called by views.confirm_request() """
         assert type(meta_dct) == dict
         assert type(host) == str
-        shibber = Shibber()
-        cleaned_meta_dct = shibber.prep_shib_dct( meta_dct, host )
-        log.debug( f'cleaned_meta_dct, ``{cleaned_meta_dct}``' )
-        temp_is_member_of_str = cleaned_meta_dct.get( 'isMemberOf', '' )
-        patron_dct = {
-            'shib_eppn': cleaned_meta_dct.get( 'Shibboleth-eppn', '' ),
-            'shib_name_first': cleaned_meta_dct.get( 'Shibboleth-givenName', '' ),
-            'shib_name_last': cleaned_meta_dct.get( 'Shibboleth-sn', '' ),
-            'shib_patron_barcode': cleaned_meta_dct.get( 'Shibboleth-brownBarCode', '' ),
-            'shib_email': cleaned_meta_dct.get( 'Shibboleth-mail', '' ),
-            'shib_group': cleaned_meta_dct.get( 'Shibboleth-brownType', '' ),
-            'shib_is_member_of_list': temp_is_member_of_str.split( ';' )
-            }
-        jsn = json.dumps( patron_dct, sort_keys=True, indent=2 )
-        self.req_data_obj.patron_json = jsn
-        self.req_data_obj.save()
-        return
+        err = None
+        try:
+            shibber = Shibber()
+            cleaned_meta_dct = shibber.prep_shib_dct( meta_dct, host )
+            log.debug( f'cleaned_meta_dct, ``{cleaned_meta_dct}``' )
+            temp_is_member_of_str = cleaned_meta_dct.get( 'isMemberOf', '' )
+            patron_dct = {
+                'shib_eppn': cleaned_meta_dct.get( 'Shibboleth-eppn', '' ),
+                'shib_name_first': cleaned_meta_dct.get( 'Shibboleth-givenName', '' ),
+                'shib_name_last': cleaned_meta_dct.get( 'Shibboleth-sn', '' ),
+                'shib_patron_barcode': cleaned_meta_dct.get( 'Shibboleth-brownBarCode', '' ),
+                'shib_email': cleaned_meta_dct.get( 'Shibboleth-mail', '' ),
+                'shib_group': cleaned_meta_dct.get( 'Shibboleth-brownType', '' ),
+                'shib_is_member_of_list': temp_is_member_of_str.split( ';' )
+                }
+            jsn = json.dumps( patron_dct, sort_keys=True, indent=2 )
+            self.req_data_obj.patron_json = jsn
+            self.req_data_obj.save()
+        except:
+            err = 'Problem creating and saving patron-data.'
+            log.exception( err )
+        return err
+
+    # def save_patron_info( self, meta_dct, host ):
+    #     """ Saves required shib-info.
+    #         Called by views.confirm_request() """
+    #     assert type(meta_dct) == dict
+    #     assert type(host) == str
+    #     shibber = Shibber()
+    #     cleaned_meta_dct = shibber.prep_shib_dct( meta_dct, host )
+    #     log.debug( f'cleaned_meta_dct, ``{cleaned_meta_dct}``' )
+    #     temp_is_member_of_str = cleaned_meta_dct.get( 'isMemberOf', '' )
+    #     patron_dct = {
+    #         'shib_eppn': cleaned_meta_dct.get( 'Shibboleth-eppn', '' ),
+    #         'shib_name_first': cleaned_meta_dct.get( 'Shibboleth-givenName', '' ),
+    #         'shib_name_last': cleaned_meta_dct.get( 'Shibboleth-sn', '' ),
+    #         'shib_patron_barcode': cleaned_meta_dct.get( 'Shibboleth-brownBarCode', '' ),
+    #         'shib_email': cleaned_meta_dct.get( 'Shibboleth-mail', '' ),
+    #         'shib_group': cleaned_meta_dct.get( 'Shibboleth-brownType', '' ),
+    #         'shib_is_member_of_list': temp_is_member_of_str.split( ';' )
+    #         }
+    #     jsn = json.dumps( patron_dct, sort_keys=True, indent=2 )
+    #     self.req_data_obj.patron_json = jsn
+    #     self.req_data_obj.save()
+    #     return
 
 
     # def ensure_basics()
