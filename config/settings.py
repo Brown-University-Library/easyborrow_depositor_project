@@ -190,3 +190,5 @@ LOGGING = {
 # =================================================
 
 BIB_OURL_API = os.environ['EZB_DEP__BIB_OURL_API_ROOT']
+
+DEV_SHIB_DCT = json.loads( os.environ['EZB_DEP__DEV_SHIB_DCT_JSON'] )
