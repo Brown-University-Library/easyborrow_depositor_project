@@ -65,6 +65,9 @@ class RequestLegacyEntry(models.Model):
 
     class Meta:
         managed = False
+        ordering = ['-created']
+        verbose_name = "deposited entry"
+        verbose_name_plural = "deposited entries"
         db_table = 'requests'
 
     ## end RequestLegacyEntry()

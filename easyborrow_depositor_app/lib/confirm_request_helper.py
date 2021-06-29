@@ -122,15 +122,6 @@ class ConfReqHlpr():
             resp = render( request, 'easyborrow_depositor_app_templates/confirm.html', context )
         return resp
 
-    def handle_error( self, request, err ):
-        """ Called by multiple view functions if ConfReqHlpr() returns an error. """
-        assert type(err) == str
-        request.session['error_message'] = err
-        redirect_url = reverse( 'message_url' )
-        log.debug( 'redirecting to message url' )
-        rsp = HttpResponseRedirect( redirect_url )
-        return rsp
-
     ## end class class ConfReqHlpr()
 
 

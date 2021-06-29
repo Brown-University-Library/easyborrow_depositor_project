@@ -2,9 +2,12 @@ import logging
 from urllib import parse
 
 import requests
-from django.core.cache import cache
-from django.urls import reverse
+
 from django.conf import settings
+from django.core.cache import cache
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 
 
 log = logging.getLogger(__name__)
@@ -32,7 +35,7 @@ def build_feedback_url( perceived_url, perceived_ip, email ):
 
 def grab_pattern_header( feedback_url ) -> str:
     """ Prepares html for header.
-        Called by ??? """
+        Called by a few helper.prepare_context() functions. """
     assert type( feedback_url ) == str
     cache_key = 'pattern_header'
     header_html = cache.get( cache_key, None )
@@ -47,16 +50,11 @@ def grab_pattern_header( feedback_url ) -> str:
     return header_html
 
 
-# def build_feedback_url( perceived_url, perceived_ip ):
-#     """ Builds problem/feedback url.
-#         Called by confirm_requeast_helper.prepare_context() """
-#     assert type( perceived_url ) == str
-#     assert type( perceived_ip ) == str
-#     feedback_url = '{feedback_form_url}?formkey={feedback_form_key}&entry_2={perceived_url}&entry_3={perceived_ip}'.format(
-#         feedback_form_url=settings.FEEDBACK_FORM_URL,
-#         feedback_form_key=settings.FEEDBACK_FORM_KEY,
-#         perceived_url=perceived_url,
-#         perceived_ip=perceived_ip
-#         )
-#     log.debug( f'feedback_url, ``{feedback_url}``' )
-#     return feedback_url
+def handle_error( request, err ):
+    """ Called by multiple view functions if helper-instance returns an error. """
+    assert type(err) == str
+    request.session['error_message'] = err
+    redirect_url = reverse( 'message_url' )
+    log.debug( 'redirecting to message url' )
+    rsp = HttpResponseRedirect( redirect_url )
+    return rsp

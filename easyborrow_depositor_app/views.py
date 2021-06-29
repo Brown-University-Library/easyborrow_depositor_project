@@ -5,6 +5,7 @@ import requests
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.urls import reverse
+from easyborrow_depositor_app.lib import common
 from easyborrow_depositor_app.lib import version_helper
 from easyborrow_depositor_app.lib.confirm_request_helper import ConfReqHlpr
 from easyborrow_depositor_app.lib.confirm_handler_helper import ConfHndlrHlpr
@@ -31,24 +32,24 @@ def confirm_request( request ):
     ( uu_id, err ) = conf_req_hlpr.save_incoming_data(
         request.build_absolute_uri(), request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') )
     if err:
-        rsp = conf_req_hlpr.handle_error( request, err )
+        rsp = common.handle_error( request, err )
         return rsp
     assert type(uu_id) == str
     request.session['uu_id'] = uu_id
     ## save item info -----------------------------
     err = conf_req_hlpr.save_item_info( request.META["QUERY_STRING"] )
     if err:
-        rsp = conf_req_hlpr.handle_error( request, err )
+        rsp = common.handle_error( request, err )
         return rsp
     ## save patron info ---------------------------
     err = conf_req_hlpr.save_patron_info( request.META, request.get_host() )
     if err:
-        rsp = conf_req_hlpr.handle_error( request, err )
+        rsp = common.handle_error( request, err )
         return rsp
     ## prep context -------------------------------
     ( context, err ) = conf_req_hlpr.prepare_context( start )
     if err:
-        rsp = conf_req_hlpr.handle_error( request, err )
+        rsp = common.handle_error( request, err )
         return rsp
     ## prep response ------------------------------
     resp = conf_req_hlpr.prepare_response( request, context )
@@ -60,8 +61,16 @@ def confirm_handler( request ):
     uu_id = request.session['uu_id']
     log.debug( f'uu_id, ``{uu_id}``' )
     conf_hndlr_hlpr = ConfHndlrHlpr()
-    conf_hndlr_hlpr.load_data_obj( uu_id )
-    conf_hndlr_hlpr.save_request_to_ezb_db()
+    err = conf_hndlr_hlpr.load_data_obj( uu_id )
+    if err:
+        rsp = common.handle_error( request, err )
+        return rsp
+
+    err = conf_hndlr_hlpr.save_request_to_ezb_db()
+    if err:
+        rsp = common.handle_error( request, err )
+        return rsp
+
     return HttpResponse( 'confirm_handler coming ' )
 
 def message( request ):
@@ -95,3 +104,43 @@ def error_check( request ):
 def info( request ):
     """ Presents basic web-app info. """
     return HttpResponse( 'info response coming' )
+
+
+
+
+
+
+
+
+
+
+
+#     def build_submitted_message( self, firstname, lastname, bib_dct, ezb_db_id, email ):
+#         """ Prepares submitted message
+#             Called by views.process_request() """
+#         if bib_dct.get( 'title', '' ) != '':
+#             title = bib_dct['title']
+#         else:
+#             title = bib_dct['source']
+#         message = '''
+# Greetings {firstname} {lastname},
+
+# We're getting the title '{title}' for you. You'll soon receive more information in an email.
+
+# Some information for your records:
+
+# - Title: '{title}'
+# - Your easyBorrow reference number: '{ezb_reference_num}'
+# - Notification of arrival will be sent to email address: <{email}>
+
+# If you have any questions, contact the Library's Interlibrary Loan office at <interlibrary_loan@brown.edu> or call 401-863-2169.
+
+#   '''.format(
+#         firstname=firstname,
+#         lastname=lastname,
+#         title=title,
+#         ezb_reference_num=ezb_db_id,
+#         email=email )
+#         log.debug( 'ezb submitted message built' )
+#         return message
+
