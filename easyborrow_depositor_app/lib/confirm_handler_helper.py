@@ -5,6 +5,7 @@ import requests
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.utils import timezone
 from easyborrow_depositor_app.lib import common
 from easyborrow_depositor_app.models import RequestData
 from easyborrow_depositor_app.models import RequestLegacyEntry
@@ -56,8 +57,6 @@ class ConfHndlrHlpr():
             ezb_db.alt_edition = 'y'
             ezb_db.request_status = 'not_yet_processed'
             ezb_db.staffnote = ''
-            # ezb_db.created = datetime.datetime.now()
-            from django.utils import timezone
             ezb_db.created = timezone.now()
 
             ## save -------------------------------

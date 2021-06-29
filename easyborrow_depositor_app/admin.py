@@ -42,14 +42,14 @@ class MultiDBModelAdmin(admin.ModelAdmin):
 class RequestDataAdmin(admin.ModelAdmin):
 
     # list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_json', 'item_json', 'patron_json', 'ezb_db_id' ]
-    list_display = [ 'created', 'uu_id', 'perceived_url_100', 'referrer_json', 'item_json_100', 'patron_json_100', 'ezb_db_id' ]
+    list_display = [ 'created', 'uu_id', 'perceived_url_75', 'referrer_json', 'item_json_100', 'patron_json_100', 'ezb_db_id' ]
 
-    def perceived_url_100( self, obj ):
+    def perceived_url_75( self, obj ):
         url = obj.perceived_url
-        if len(obj.perceived_url) > 100:
-            url = f'{obj.perceived_url[:97]}...'
+        if len(obj.perceived_url) > 75:
+            url = f'{obj.perceived_url[:72]}...'
         return url
-    perceived_url_100.short_description = 'perceived url (100)'
+    perceived_url_75.short_description = 'perceived url (75)'
 
     def item_json_100( self, obj ):
         item_str = obj.item_json
