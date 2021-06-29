@@ -32,18 +32,42 @@ class ConfHndlrHlpr():
             ezb_db = RequestLegacyEntry()
             ## item data --------------------------
             item_dct = json.loads( self.req_data_obj.item_json )
-            ezb_db.title = item_dct.get( 'title', '' )
-            ezb_db.isbn = self.process_isbn( item_dct )
-            ezb_db.wc_accession = self.process_oclcnum( item_dct )
+            ezb_db.title = item_dct.get( 'title', '' )[0:255]
+            ezb_db.isbn = self.process_isbn( item_dct )[0:13]
+            ezb_db.wc_accession = self.process_oclcnum( item_dct )[0:20]
+            # bibno
+            ezb_db.volumes = self.process_volumes( item_dct )
+            ezb_db.sfxurl = self.req_data_obj.perceived_url[0:1000]
 
-            ezb_db.sfxurl = self.req_data_obj.perceived_url
-            ## patron data --------------------------
-            ## other data --------------------------
-            ezb_db.created = datetime.datetime.now()
+            ## patron data ------------------------
+            patron_dct = json.loads( self.req_data_obj.patron_json )
+            ezb_db.patronid = None
+            ezb_db.eppn = patron_dct.get( 'shib_eppn', '' )
+            ezb_db.name = '%s %s'.strip() % ( patron_dct.get('shib_name_first', ''), patron_dct.get('shib_name_last', '') )
+            ezb_db.firstname = patron_dct.get( 'shib_name_first', '' )
+            ezb_db.lastname = patron_dct.get( 'shib_name_last', '' )
+            ezb_db.barcode = patron_dct.get( 'shib_patron_barcode', '' )
+            ezb_db.email = patron_dct.get( 'shib_email', '' )
+            ezb_db.group = patron_dct.get( 'shib_group', '' )
+
+            ## other data -------------------------
+            ezb_db.pref = 'quick'
+            ezb_db.loc = 'rock'
+            ezb_db.alt_edition = 'y'
+            ezb_db.request_status = 'not_yet_processed'
+            ezb_db.staffnote = ''
+            # ezb_db.created = datetime.datetime.now()
+            from django.utils import timezone
+            ezb_db.created = timezone.now()
+
+            ## save -------------------------------
             ezb_db.save( using='ezborrow_legacy' )
+
+            ## update request-obj w/ezb-id --------
             log.debug( f'ezb_db.id, ``{ezb_db.id}``' )
             self.req_data_obj.ezb_db_id = ezb_db.id
             self.req_data_obj.save()
+
             return
         except:
             err = 'Problem saving request into easyBorrow database.'
@@ -51,7 +75,7 @@ class ConfHndlrHlpr():
             return err
 
     def process_isbn( self, item_dct ):
-        log.debug( f'item_dct, ``{pprint.pformat(item_dct)}``' )
+        # log.debug( f'item_dct, ``{pprint.pformat(item_dct)}``' )
         isbn = ''
         identifiers = item_dct.get('identifier', [])
         log.debug( f'identifiers, ``{identifiers}``' )
@@ -69,7 +93,7 @@ class ConfHndlrHlpr():
         return isbn
 
     def process_oclcnum( self, item_dct ):
-        log.debug( f'item_dct, ``{pprint.pformat(item_dct)}``' )
+        # log.debug( f'item_dct, ``{pprint.pformat(item_dct)}``' )
         oclc = ''
         identifiers = item_dct.get('identifier', [])
         log.debug( f'identifiers, ``{identifiers}``' )
@@ -85,5 +109,13 @@ class ConfHndlrHlpr():
                     break
         log.debug( f'oclc, ``{oclc}``' )
         return oclc
+
+    def process_volumes( self, item_dct ):
+        volumes = item_dct.get( 'volume', None )
+        if volumes:
+            volumes = volumes[0:255]
+        else:
+            volumes = ''
+        return volumes
 
     ## end class ConfHndlrHlpr()
