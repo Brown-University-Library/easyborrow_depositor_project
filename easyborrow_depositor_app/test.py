@@ -4,6 +4,7 @@ import json, pprint
 
 from django.test import TestCase
 from easyborrow_depositor_app.lib import version_helper
+from easyborrow_depositor_app.lib.confirm_handler_helper import ConfHndlrHlpr
 
 
 # log = logging.getLogger(__name__)
@@ -23,3 +24,26 @@ class VersionUrlTest( TestCase ):
         self.assertEqual( ['request', 'response'], dct_keys )
         response_keys = sorted( jsn_dct['response'].keys() )
         self.assertEqual( ['timetaken', 'version'], response_keys )
+
+
+class ParseItemDct( TestCase ):
+
+    def test_isbn(self):
+        hlpr = ConfHndlrHlpr()
+        jsn = '''{
+  "end_page": null,
+  "identifier": [
+    {
+      "id": "0688084613",
+      "type": "isbn"
+    },
+    {
+      "id": ":",
+      "type": "isbn"
+    }
+  ],
+  "issue": null
+}'''
+        dct = json.loads( jsn )
+        isbn = hlpr.process_isbn( dct )
+        self.assertEqual( '0688084613', isbn )

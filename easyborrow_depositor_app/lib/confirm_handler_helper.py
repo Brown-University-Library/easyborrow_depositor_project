@@ -29,17 +29,38 @@ class ConfHndlrHlpr():
 
     def save_request_to_ezb_db( self ):
         try:
-            legacy_entry = RequestLegacyEntry()
+            ezb_db = RequestLegacyEntry()
             item_dct = json.loads( self.req_data_obj.item_json )
-            legacy_entry.title = item_dct['title']
-            legacy_entry.sfxurl = self.req_data_obj.perceived_url
-            legacy_entry.created = datetime.datetime.now()
-            legacy_entry.save( using='ezborrow_legacy' )
-            log.debug( f'legacy_entry.id, ``{legacy_entry.id}``' )
-            return 'foo'
+            ezb_db.title = item_dct.get( 'title', '' )
+            ezb_db.isbn = self.process_isbn( item_dct )
+            ezb_db.sfxurl = self.req_data_obj.perceived_url
+            ezb_db.created = datetime.datetime.now()
+            ezb_db.save( using='ezborrow_legacy' )
+            log.debug( f'ezb_db.id, ``{ezb_db.id}``' )
+            self.req_data_obj.ezb_db_id = ezb_db.id
+            self.req_data_obj.save()
+            return
         except:
             err = 'Problem saving request into easyBorrow database.'
             log.exception( err )
             return err
+
+    def process_isbn( self, item_dct ):
+        log.debug( f'item_dct, ``{pprint.pformat(item_dct)}``' )
+        isbn = ''
+        identifiers = item_dct.get('identifier', [])
+        log.debug( f'identifiers, ``{identifiers}``' )
+        for iden in identifiers:
+            log.debug( f'iden, ``{iden}``' )
+            assert type(iden) == dict
+            assert sorted( iden.keys() ) == ['id', 'type']
+            if iden['type'] == 'isbn':
+                log.debug( 'type legit' )
+                if len( iden['id'].strip() ) > 1:
+                    log.debug( 'len id legit' )
+                    isbn = iden['id']
+                    break
+        log.debug( f'isbn, ``{isbn}``' )
+        return isbn
 
     ## end class ConfHndlrHlpr()
