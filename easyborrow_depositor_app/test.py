@@ -34,7 +34,7 @@ class ParseItemDct( TestCase ):
   "end_page": null,
   "identifier": [
     {
-      "id": "0688084613",
+      "id": "068-808-4613",
       "type": "isbn"
     },
     {

@@ -58,7 +58,7 @@ class ConfHndlrHlpr():
                 log.debug( 'type legit' )
                 if len( iden['id'].strip() ) > 1:
                     log.debug( 'len id legit' )
-                    isbn = iden['id']
+                    isbn = iden['id'].replace( '-', '' )
                     break
         log.debug( f'isbn, ``{isbn}``' )
         return isbn
