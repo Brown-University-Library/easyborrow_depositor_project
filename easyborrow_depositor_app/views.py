@@ -61,17 +61,21 @@ def confirm_handler( request ):
     uu_id = request.session['uu_id']
     log.debug( f'uu_id, ``{uu_id}``' )
     conf_hndlr_hlpr = ConfHndlrHlpr()
+    ## load data from uu_id -----------------------
     err = conf_hndlr_hlpr.load_data_obj( uu_id )
     if err:
         rsp = common.handle_error( request, err )
         return rsp
-
+    ## deposit request to legacy db ---------------
     err = conf_hndlr_hlpr.save_request_to_ezb_db()
     if err:
         rsp = common.handle_error( request, err )
         return rsp
-
-    return HttpResponse( 'confirm_handler coming ' )
+    ## email user ---------------------------------
+    # TODO
+    ## redirect to message-view -------------------
+    log.debug( 'happy-path; redirecting to message-url' )
+    return HttpResponseRedirect( reverse('message_url') )
 
 def message( request ):
     """ Shows user confirmation message (or problem message). """

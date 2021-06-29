@@ -29,7 +29,6 @@ class ConfHndlrHlpr():
 
     def save_request_to_ezb_db( self ):
         try:
-            1/0
             legacy_entry = RequestLegacyEntry()
             item_dct = json.loads( self.req_data_obj.item_json )['raw_bib_dct']['response']['bib']
             legacy_entry.title = item_dct['title']
@@ -42,6 +41,5 @@ class ConfHndlrHlpr():
             err = 'Problem saving request into easyBorrow database.'
             log.exception( err )
             return err
-
 
     ## end class ConfHndlrHlpr()
