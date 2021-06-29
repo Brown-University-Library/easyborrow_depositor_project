@@ -24,12 +24,16 @@ easyrequest-hay confirm
     input#nonshib {
         margin-right: 2em;
     }
+
     /* item info... */
     div#item {
       margin-top: .5em;
+      margin-left: -4em;
       padding: 0;
       /*padding-bottom: 1.25em;*/
     }
+
+/*
     div#item p.item_label {
       margin: 0;
       padding: 0;
@@ -42,6 +46,25 @@ easyrequest-hay confirm
       float: left;
       font-weight: bold;
     }
+
+*/
+
+
+    p#bold_title {
+      margin: 0;
+      margin-top: .5em;
+      padding: 0;
+      display: block;
+      font-size: 100%;
+      line-height: 1.5em;
+      padding-right: .75em;
+      /*width: 10em;*/
+      text-align: left;
+      /*float: left;*/
+      font-weight: bold;
+    }
+
+
     div#item p.item_value {
       margin: 0;
       padding: 0;
@@ -51,6 +74,7 @@ easyrequest-hay confirm
       font-weight: bold;
     }
     /* END -- item info... */
+
     div#reminder {
         margin-top: 1em;
         padding-right: 8em;
@@ -103,18 +127,26 @@ easyrequest-hay confirm
 
 {% block content %}
 
-<h1>easyBorrow &mdash; confirm request</h1>
+<h1 id="title_heading">easyBorrow &mdash; confirm request</h1>
 
 <div id="info_text">
 
     <p>You&rsquo;re requesting, from one of our borrowing partners, the item:</p>
     <!-- no label; consider table; it's tabular! -->
+
+    <!--
     <div id="item">
         <p class="item_label">Title:</p>
         <p class="item_value">{{ item_title }}</p>
     </div>
+    -->
+
+    <div id="item_simple">
+        <p id="bold_title">Title: {{ item_title }}</p>
+    </div>
 
     <form action="{{ action_url }}" method="POST">
+        <span id="token">{% csrf_token %}</span>
         <input type="hidden" name="shortlink" value="{{ shortlink }}">
         <div id="shib">
             <input id="shib" type="submit" value="Yes, get this!" name="type">
