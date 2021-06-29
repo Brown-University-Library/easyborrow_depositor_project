@@ -106,7 +106,7 @@ class ConfReqHlpr():
                 'item_title': item_dct['title'],
                 'action_url': reverse( 'confirm_handler_url' ),
             }
-            log.debug( 'context, ```%s```' % pprint.pformat(context) )
+            log.debug( 'context, ``%s``' % pprint.pformat(context)[0:100] )
         except:
             err = 'Problem preparing "confirm-request" screen.'
             log.exception( err )

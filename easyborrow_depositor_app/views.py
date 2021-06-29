@@ -7,7 +7,9 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFou
 from django.urls import reverse
 from easyborrow_depositor_app.lib import version_helper
 from easyborrow_depositor_app.lib.confirm_request_helper import ConfReqHlpr
+from easyborrow_depositor_app.lib.confirm_handler_helper import ConfHndlrHlpr
 from easyborrow_depositor_app.models import RequestData
+
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +21,7 @@ log = logging.getLogger(__name__)
 def confirm_request( request ):
     """ Validates and cleans incoming data; presents confirmation-button; triggers call to confirm_handler. """
     log.debug( '\n\nstarting views.confirm_request()' )
-    log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
+    # log.debug( f'request.__dict__, ``{pprint.pformat(request.__dict__)}``' )
     ## setup --------------------------------------
     start = datetime.datetime.now()
     for key in [ 'uu_id', 'error_message' ]:
@@ -54,6 +56,12 @@ def confirm_request( request ):
 
 def confirm_handler( request ):
     """ Deposits data to separate easyborrow db; triggers email to user; redirects to message. """
+    log.debug( '\n\nstarting views.confirm_handler()' )
+    uu_id = request.session['uu_id']
+    log.debug( f'uu_id, ``{uu_id}``' )
+    conf_hndlr_hlpr = ConfHndlrHlpr()
+    conf_hndlr_hlpr.load_data_obj( uu_id )
+    conf_hndlr_hlpr.save_request_to_ezb_db()
     return HttpResponse( 'confirm_handler coming ' )
 
 def message( request ):
