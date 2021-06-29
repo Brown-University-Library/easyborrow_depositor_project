@@ -19,3 +19,34 @@ class RequestData( models.Model ):
         ordering = ['-created']
         verbose_name = "request entry"
         verbose_name_plural = "request entries"
+
+
+class RequestLegacyEntry(models.Model):
+
+    # TIMEPREF_CHOICES = (
+    #     ('quick', 'Quick'),
+    #     ('long', 'Long'),
+    #     ) # ('db_value', 'display_value')
+
+    # LOCATION_CHOICES = (
+    #     ('rock', 'Rock'),
+    #     ('sci', 'SciLi'),
+    #     )
+
+    # YESNO_CHOICES = (
+    #     ('y', 'Yes'),
+    #     ('n', 'No'),
+    #     )
+
+    title = models.CharField(max_length=255)
+    isbn = models.CharField(max_length=13, blank=True)
+
+    def __str__(self):
+        # return str( self.id ) + ' ::: ' + self.title
+        return self.title
+
+    class Meta:
+        managed = False
+        db_table = 'requests'
+
+    ## end RequestLegacyEntry()
