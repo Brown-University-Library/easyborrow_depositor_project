@@ -50,8 +50,10 @@ class ConfReqHlpr():
             params = { 'ourl': querystring }
             r = requests.get( settings.BIB_OURL_API, params=params, timeout=10, verify=True )
             log.debug( f'r-url, ``{r.url}``' )
-            bib_dct = json.loads( r.content.decode('utf-8', 'replace') )
-            data = { 'raw_bib_dct': bib_dct }
+            # bib_dct = json.loads( r.content.decode('utf-8', 'replace') )
+            # data = { 'raw_bib_dct': bib_dct }
+            raw_bib_dct = json.loads( r.content.decode('utf-8', 'replace') )
+            data = raw_bib_dct['response']['bib']
             jsn = json.dumps( data, sort_keys=True, indent=2 )
             self.req_data_obj.item_json = jsn
             self.req_data_obj.save()
@@ -95,7 +97,7 @@ class ConfReqHlpr():
         ( context, err ) = ( None, None )
         try:
             patron_dct = json.loads( self.req_data_obj.patron_json )
-            item_dct = json.loads( self.req_data_obj.item_json )['raw_bib_dct']['response']['bib']
+            item_dct = json.loads( self.req_data_obj.item_json )
             perceived_ip = json.loads( self.req_data_obj.referrer_json )['remote_addr']
             feedback_url = common.build_feedback_url( self.req_data_obj.perceived_url, perceived_ip, patron_dct['shib_email'] )
             context = {

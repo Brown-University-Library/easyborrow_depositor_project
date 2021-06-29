@@ -30,7 +30,7 @@ class ConfHndlrHlpr():
     def save_request_to_ezb_db( self ):
         try:
             legacy_entry = RequestLegacyEntry()
-            item_dct = json.loads( self.req_data_obj.item_json )['raw_bib_dct']['response']['bib']
+            item_dct = json.loads( self.req_data_obj.item_json )
             legacy_entry.title = item_dct['title']
             legacy_entry.sfxurl = self.req_data_obj.perceived_url
             legacy_entry.created = datetime.datetime.now()
