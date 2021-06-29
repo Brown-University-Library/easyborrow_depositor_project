@@ -86,7 +86,7 @@ class RequestDataAdmin(admin.ModelAdmin):
 
 class RequestLegacyEntryAdmin( MultiDBModelAdmin ):
 
-    list_display = [ 'title', 'isbn' ]
+    list_display = [ 'id', 'title', 'isbn' ]
 
     ## end class RequestLegacyEntryAdmin()
 
