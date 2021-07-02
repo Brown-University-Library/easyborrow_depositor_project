@@ -42,7 +42,8 @@ class ConfHndlrHlpr():
 
             ## patron data ------------------------
             patron_dct = json.loads( self.req_data_obj.patron_json )
-            ezb_db.patronid = 0  # db requires integer -- not currently used
+            # ezb_db.patronid = None
+            ezb_db.patronId = 0  # not currently used -- but it's a not-null integer field
             ezb_db.eppn = patron_dct.get( 'shib_eppn', '' )
             ezb_db.name = '%s %s'.strip() % ( patron_dct.get('shib_name_first', ''), patron_dct.get('shib_name_last', '') )
             ezb_db.firstname = patron_dct.get( 'shib_name_first', '' )
@@ -58,6 +59,8 @@ class ConfHndlrHlpr():
             ezb_db.request_status = 'not_yet_processed'
             ezb_db.staffnote = ''
             ezb_db.created = timezone.now()
+
+            log.debug( f'about to save; ezb_db obj, ``{ezb_db.__dict__}``' )
 
             ## save -------------------------------
             ezb_db.save( using='ezborrow_legacy' )

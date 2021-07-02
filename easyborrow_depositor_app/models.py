@@ -50,7 +50,7 @@ class RequestLegacyEntry(models.Model):
     alt_edition = models.CharField(max_length=1, choices=YESNO_CHOICES, default='y')
     volumes = models.CharField(max_length=255, blank=True)
     sfxurl = models.TextField()
-    patronId = models.CharField(max_length=7, blank=True)
+    patronId = models.IntegerField( blank=True )
     eppn = models.CharField(max_length=20, blank=True)
     name = models.CharField(max_length=255, blank=True)
     firstname = models.CharField(max_length=120, blank=True)
