@@ -1,10 +1,13 @@
 import uuid
 
+from django.utils import timezone
 from django.db import models
 
 
 class RequestData( models.Model ):
-    created = models.DateTimeField( auto_now_add=True )
+    # created = models.DateTimeField( auto_now_add=True )
+    created = models.DateTimeField( default=timezone.now )
+
     uu_id = models.UUIDField( default=uuid.uuid4, editable=False )
     perceived_url = models.TextField( null=True, blank=True )
     referrer_json = models.TextField( null=True, blank=True )
