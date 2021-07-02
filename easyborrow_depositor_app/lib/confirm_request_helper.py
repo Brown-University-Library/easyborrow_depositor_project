@@ -136,7 +136,8 @@ class Shibber():
         if host == '127.0.0.1' or host == '127.0.0.1:8000' or host == 'testserver':
             cleaned_meta_dct = settings.DEV_SHIB_DCT
         else:
-            cleaned_meta_dct = copy.copy( request_meta_dct )
+            # cleaned_meta_dct = copy.copy( request_meta_dct )
+            cleaned_meta_dct = request_meta_dct.copy()
             for (key, val) in request_meta_dct.items():  # get rid of some dictionary items not serializable
                 if 'passenger' in key:
                     cleaned_meta_dct.pop( key )
