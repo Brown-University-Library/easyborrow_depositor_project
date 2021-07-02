@@ -32,7 +32,7 @@ SECRET_KEY = os.environ['EZB_DEP__SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = json.loads( os.environ['EZB_DEP__ALLOWED_HOSTS_JSON'] )  # list
 
 # Application definition
 
