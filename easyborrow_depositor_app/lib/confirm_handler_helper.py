@@ -42,7 +42,7 @@ class ConfHndlrHlpr():
 
             ## patron data ------------------------
             patron_dct = json.loads( self.req_data_obj.patron_json )
-            ezb_db.patronid = None
+            ezb_db.patronid = 0  # db requires integer -- not currently used
             ezb_db.eppn = patron_dct.get( 'shib_eppn', '' )
             ezb_db.name = '%s %s'.strip() % ( patron_dct.get('shib_name_first', ''), patron_dct.get('shib_name_last', '') )
             ezb_db.firstname = patron_dct.get( 'shib_name_first', '' )
