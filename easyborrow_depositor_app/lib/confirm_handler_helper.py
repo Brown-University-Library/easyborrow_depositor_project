@@ -23,6 +23,7 @@ class ConfHndlrHlpr():
     def load_data_obj( self, uu_id ):
         try:
             self.req_data_obj = RequestData.objects.get( uu_id=uu_id )
+            return None
         except:
             err = 'Problem accessing request-data.'
             log.exception( err )

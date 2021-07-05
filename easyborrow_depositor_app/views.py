@@ -4,11 +4,13 @@ import requests
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from django.shortcuts import render
 from django.urls import reverse
 from easyborrow_depositor_app.lib import common
 from easyborrow_depositor_app.lib import version_helper
-from easyborrow_depositor_app.lib.confirm_request_helper import ConfReqHlpr
 from easyborrow_depositor_app.lib.confirm_handler_helper import ConfHndlrHlpr
+from easyborrow_depositor_app.lib.confirm_request_helper import ConfReqHlpr
+from easyborrow_depositor_app.lib.message_helper import MsgHlpr
 from easyborrow_depositor_app.models import RequestData
 
 
@@ -55,6 +57,7 @@ def confirm_request( request ):
     resp = conf_req_hlpr.prepare_response( request, context )
     return resp
 
+
 def confirm_handler( request ):
     """ Deposits data to separate easyborrow db; triggers email to user; redirects to message. """
     log.debug( '\n\nstarting views.confirm_handler()' )
@@ -77,16 +80,39 @@ def confirm_handler( request ):
     log.debug( 'happy-path; redirecting to message-url' )
     return HttpResponseRedirect( reverse('message_url') )
 
+
 def message( request ):
     """ Shows user confirmation message (or problem message). """
     log.debug( '\n\nstarting views.message()' )
-    message = request.session['error_message']
-    return HttpResponse( message )
+    # message = request.session['error_message']
+    message = request.session.get( 'error_message', '' )
+    if message:
+        log.debug( 'returning error_message' )
+        return HttpResponse( message )
+    ## load data from uu_id -----------------------
+    msg_hlpr = MsgHlpr()
+    uu_id = request.session['uu_id']
+    log.debug( f'uu_id, ``{uu_id}``' )
+    err = msg_hlpr.load_data_obj( uu_id )
+    if err:
+        assert type(err) == str
+        return HttpResponse( err )
+    ## prep context -------------------------------
+    ( context, err ) = msg_hlpr.prepare_context()
+    log.debug( f'err, ``{err}``' )
+    log.debug( f'context, ``{context}``' )
+    if err:
+        assert type(err) == str
+        return HttpResponse( err )
+    ## return request-submitted message -----------
+    assert type(context) == dict
+    return render( request, 'easyborrow_depositor_app_templates/message.html', context )
 
 
 # =================================================
 # support urls...
 # =================================================
+
 
 def version( request ):
     """ Returns basic branch and commit data. """
@@ -98,12 +124,14 @@ def version( request ):
     output = json.dumps( context, sort_keys=True, indent=2 )
     return HttpResponse( output, content_type='application/json; charset=utf-8' )
 
+
 def error_check( request ):
     """ For checking that admins receive error-emails. """
     if settings.DEBUG == True:
         1/0
     else:
         return HttpResponseNotFound( '<div>404 / Not Found</div>' )
+
 
 def info( request ):
     """ Presents basic web-app info. """
