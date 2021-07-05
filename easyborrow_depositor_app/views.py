@@ -99,7 +99,7 @@ def message( request ):
         assert type(err) == str
         return HttpResponse( err )
     ## prep context -------------------------------
-    ( context, err ) = msg_hlpr.prepare_context()
+    ( context, err ) = msg_hlpr.prepare_good_context()
     log.debug( f'err, ``{err}``' )
     log.debug( f'context, ``{context}``' )
     if err:

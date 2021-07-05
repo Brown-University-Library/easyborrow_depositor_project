@@ -15,29 +15,48 @@ class MsgHlpr():
     def load_data_obj( self, uu_id ):
         try:
             self.req_data_obj = RequestData.objects.get( uu_id=uu_id )
+            log.debug( 'returning None' )
             return None
         except:
             err = 'Problem accessing request-data.'
             log.exception( err )
+            log.debug( 'returning err' )
             return err
 
     def build_problem_context( self, error_message, uu_id ):
         """ Preps context for problem display.
             Called by views.message() """
+        log.debug( 'starting build_problem_context' )
+        log.debug( f'error_message, ``{error_message}``' )
+        log.debug( f'uu_id, ``{uu_id}``' )
         assert type(error_message) == str
         assert type(uu_id) == str
         perceived_url = 'unavailable'
         perceived_ip = 'unavailable'
         patron_email = 'unavailable'
         try:
+            log.debug( 'starting try' )
             self.load_data_obj( uu_id )
+        except:
+            log.error( 'could not load request-data-obj' )
+        try:
             patron_dct = json.loads( self.req_data_obj.patron_json )
-            perceived_url = self.req_data_obj.perceived_url
-            perceived_ip = json.loads( self.req_data_obj.referrer_json )['remote_addr']
             patron_email = patron_dct['shib_email']
         except:
-            log.exception( "unable to load data-object when preparing error-context" )
+            log.error( 'could not load patron-json' )
+        try:
+            perceived_url = self.req_data_obj.perceived_url
+        except:
+            log.error( 'could not access perceived_url' )
+        try:
+            perceived_ip = json.loads( self.req_data_obj.referrer_json )['remote_addr']
+        except:
+            log.error( 'could not access perceived_ip' )
+        log.debug( f'perceived_url, ``{perceived_url}``' )
+        log.debug( f'perceived_ip, ``{perceived_ip}``' )
+        log.debug( f'patron_email, ``{patron_email}``' )
         feedback_url = common.build_feedback_url( perceived_url, perceived_ip, patron_email )
+        log.debug( f'feedback_url, ``{feedback_url}``' )
         context = {
             'pattern_header': common.grab_pattern_header( feedback_url ),
             'error_message': error_message
@@ -45,7 +64,7 @@ class MsgHlpr():
         log.debug( 'returning error context' )
         return context
 
-    def prepare_context( self ):
+    def prepare_good_context( self ):
         """ Preps context for request-received display.
             Called by views.message() """
         ( context, err ) = ( None, None )
