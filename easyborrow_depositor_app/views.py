@@ -84,14 +84,15 @@ def confirm_handler( request ):
 def message( request ):
     """ Shows user confirmation message (or problem message). """
     log.debug( '\n\nstarting views.message()' )
-    # message = request.session['error_message']
-    message = request.session.get( 'error_message', '' )
-    if message:
-        log.debug( 'returning error_message' )
-        return HttpResponse( message )
-    ## load data from uu_id -----------------------
     msg_hlpr = MsgHlpr()
+    error_message = request.session.get( 'error_message', '' )
     uu_id = request.session['uu_id']
+    if error_message:
+        log.debug( 'returning error_message' )
+        # return HttpResponse( message )
+        context = msg_hlpr.build_problem_context( error_message, uu_id )
+        return render( request, 'easyborrow_depositor_app_templates/message.html', context )
+    ## load data from uu_id -----------------------
     log.debug( f'uu_id, ``{uu_id}``' )
     err = msg_hlpr.load_data_obj( uu_id )
     if err:

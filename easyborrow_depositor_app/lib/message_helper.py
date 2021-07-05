@@ -21,8 +21,32 @@ class MsgHlpr():
             log.exception( err )
             return err
 
+    def build_problem_context( self, error_message, uu_id ):
+        """ Preps context for problem display.
+            Called by views.message() """
+        assert type(error_message) == str
+        assert type(uu_id) == str
+        perceived_url = 'unavailable'
+        perceived_ip = 'unavailable'
+        patron_email = 'unavailable'
+        try:
+            self.load_data_obj( uu_id )
+            patron_dct = json.loads( self.req_data_obj.patron_json )
+            perceived_url = self.req_data_obj.perceived_url
+            perceived_ip = json.loads( self.req_data_obj.referrer_json )['remote_addr']
+            patron_email = patron_dct['shib_email']
+        except:
+            log.exception( "unable to load data-object when preparing error-context" )
+        feedback_url = common.build_feedback_url( perceived_url, perceived_ip, patron_email )
+        context = {
+            'pattern_header': common.grab_pattern_header( feedback_url ),
+            'error_message': error_message
+        }
+        log.debug( 'returning error context' )
+        return context
+
     def prepare_context( self ):
-        """ Preps page's data_dct.
+        """ Preps context for request-received display.
             Called by views.message() """
         ( context, err ) = ( None, None )
         try:
@@ -30,13 +54,6 @@ class MsgHlpr():
             item_dct = json.loads( self.req_data_obj.item_json )
             perceived_ip = json.loads( self.req_data_obj.referrer_json )['remote_addr']
             feedback_url = common.build_feedback_url( self.req_data_obj.perceived_url, perceived_ip, patron_dct['shib_email'] )
-            # submitted_message = self.build_submitted_message(
-            #     patron_dct['shib_name_first'],
-            #     patron_dct['shib_name_last'],
-            #     item_dct['title'],
-            #     self.req_data_obj.ezb_db_id,
-            #     patron_dct['shib_email']
-            #     )
             submitted_message = {
                 'firstname': patron_dct['shib_name_first'],
                 'lastname': patron_dct['shib_name_last'],
@@ -47,8 +64,6 @@ class MsgHlpr():
             context = {
                 'pattern_header': common.grab_pattern_header( feedback_url ),
                 'submitted_message': submitted_message }
-            # log.debug( f'type(context), ``{type(context)}``' )
-            # log.debug( f'context, ``{context}``' )
         except:
             err = 'Problem building submitted message.'
             log.exception( err )
