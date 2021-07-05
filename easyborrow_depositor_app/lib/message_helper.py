@@ -1,5 +1,6 @@
 import json, logging
 
+from easyborrow_depositor_app.lib import common
 from easyborrow_depositor_app.models import RequestData
 
 
@@ -27,14 +28,25 @@ class MsgHlpr():
         try:
             patron_dct = json.loads( self.req_data_obj.patron_json )
             item_dct = json.loads( self.req_data_obj.item_json )
-            submitted_message = self.build_submitted_message(
-                patron_dct['shib_name_first'],
-                patron_dct['shib_name_last'],
-                item_dct['title'],
-                self.req_data_obj.ezb_db_id,
-                patron_dct['shib_email']
-                )
-            context = { 'submitted_message': submitted_message }
+            perceived_ip = json.loads( self.req_data_obj.referrer_json )['remote_addr']
+            feedback_url = common.build_feedback_url( self.req_data_obj.perceived_url, perceived_ip, patron_dct['shib_email'] )
+            # submitted_message = self.build_submitted_message(
+            #     patron_dct['shib_name_first'],
+            #     patron_dct['shib_name_last'],
+            #     item_dct['title'],
+            #     self.req_data_obj.ezb_db_id,
+            #     patron_dct['shib_email']
+            #     )
+            submitted_message = {
+                'firstname': patron_dct['shib_name_first'],
+                'lastname': patron_dct['shib_name_last'],
+                'title': item_dct['title'],
+                'ezb_db_id': self.req_data_obj.ezb_db_id,
+                'email': patron_dct['shib_email']
+                }
+            context = {
+                'pattern_header': common.grab_pattern_header( feedback_url ),
+                'submitted_message': submitted_message }
             # log.debug( f'type(context), ``{type(context)}``' )
             # log.debug( f'context, ``{context}``' )
         except:
