@@ -1,7 +1,8 @@
 import uuid
 
-from django.utils import timezone
+from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class RequestData( models.Model ):
@@ -71,7 +72,8 @@ class RequestLegacyEntry(models.Model):
         ordering = ['-created']
         verbose_name = "deposited entry"
         verbose_name_plural = "deposited entries"
-        db_table = 'requests'
+        # db_table = 'requests'
+        db_table = settings.LEGACY_TABLE_NAME
 
     ## end RequestLegacyEntry()
 
