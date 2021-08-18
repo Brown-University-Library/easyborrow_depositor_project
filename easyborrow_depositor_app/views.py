@@ -91,7 +91,8 @@ def message( request ):
         log.debug( 'returning error_message' )
         # return HttpResponse( message )
         context = msg_hlpr.build_problem_context( error_message, uu_id )
-        return render( request, 'easyborrow_depositor_app_templates/message.html', context )
+        # return render( request, 'easyborrow_depositor_app_templates/message.html', context )
+        return render( request, 'message.html', context )
     ## load data from uu_id -----------------------
     log.debug( f'uu_id, ``{uu_id}``' )
     err = msg_hlpr.load_data_obj( uu_id )
@@ -107,7 +108,8 @@ def message( request ):
         return HttpResponse( err )
     ## return request-submitted message -----------
     assert type(context) == dict
-    return render( request, 'easyborrow_depositor_app_templates/message.html', context )
+    # return render( request, 'easyborrow_depositor_app_templates/message.html', context )
+    return render( request, 'message.html', context )
 
 
 # =================================================
@@ -136,7 +138,7 @@ def error_check( request ):
 
 def info( request ):
     """ Presents basic web-app info. """
-    return HttpResponse( 'info response coming' )
+    return HttpResponse( 'info response coming - C' )
 
 
 

@@ -121,7 +121,8 @@ class ConfReqHlpr():
             context_json = json.dumps(context, sort_keys=True, indent=2)
             resp = HttpResponse( context_json, content_type='application/javascript; charset=utf-8' )
         else:
-            resp = render( request, 'easyborrow_depositor_app_templates/confirm.html', context )
+            # resp = render( request, 'easyborrow_depositor_app_templates/confirm.html', context )
+            return render( request, 'confirm.html', context )
         return resp
 
     ## end class class ConfReqHlpr()

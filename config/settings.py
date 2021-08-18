@@ -58,11 +58,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-template_dirs = json.loads( os.environ['EZB_DEP__TEMPLATE_DIRS_JSON'] )
+# template_dirs = json.loads( os.environ['EZB_DEP__TEMPLATE_DIRS_JSON'] )
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': template_dirs,
+        # 'DIRS': template_dirs,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
