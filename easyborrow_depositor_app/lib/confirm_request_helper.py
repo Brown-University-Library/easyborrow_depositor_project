@@ -75,7 +75,7 @@ class ConfReqHlpr():
             temp_is_member_of_str = cleaned_meta_dct.get( 'isMemberOf', '' )
             temp_eppn = cleaned_meta_dct.get( 'Shibboleth-eppn', '' )
             patron_dct = {
-                'shib_eppn': s.split( '@' )[0],  # just the auth_id goes into the db  :(
+                'shib_eppn': temp_eppn.split( '@' )[0],  # just the auth_id goes into the db  :(
                 'shib_name_first': cleaned_meta_dct.get( 'Shibboleth-givenName', '' ),
                 'shib_name_last': cleaned_meta_dct.get( 'Shibboleth-sn', '' ),
                 'shib_patron_barcode': cleaned_meta_dct.get( 'Shibboleth-brownBarCode', '' ),
